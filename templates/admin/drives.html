@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Placement Drives{% endblock %}
+{% block page_title %}Placement Drives{% endblock %}
+{% block content %}
+
+<div class="filter-tabs">
+    <a href="{{ url_for('admin.drives') }}" class="btn btn-sm {{ 'btn-primary' if not status_filter else 'btn-light' }}">All</a>
+    <a href="{{ url_for('admin.drives') }}?status=pending" class="btn btn-sm {{ 'btn-warning' if status_filter=='pending' else 'btn-light' }}">Pending</a>
+    <a href="{{ url_for('admin.drives') }}?status=approved" class="btn btn-sm {{ 'btn-success' if status_filter=='approved' else 'btn-light' }}">Approved</a>
+    <a href="{{ url_for('admin.drives') }}?status=rejected" class="btn btn-sm {{ 'btn-danger' if status_filter=='rejected' else 'btn-light' }}">Rejected</a>
+    <a href="{{ url_for('admin.drives') }}?status=closed" class="btn btn-sm {{ 'btn-secondary' if status_filter=='closed' else 'btn-light' }}">Closed</a>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding:0">
+        {% if drives %}
+        <table class="tbl">
+            <thead><tr>
+                <th class="pl">Drive</th><th>Company</th><th>Skills</th>
+                <th>Salary</th><th>Deadline</th><th>Apps</th><th>Status</th><th class="right">Actions</th>
+            </tr></thead>
+            <tbody>
+            {% for drive in drives %}
+            <tr>
+                <td class="pl"><strong>{{ drive.job_title }}</strong><br><span class="text-muted text-sm">{{ drive.job_description[:60] }}...</span></td>
+                <td class="text-sm">{{ drive.company.company_name }}</td>
+                <td>{% if drive.required_skills %}{% for skill in drive.required_skills.split(',')[:2] %}<span class="skill-tag">{{ skill.strip() }}</span>{% endfor %}{% else %}—{% endif %}</td>
+                <td class="text-sm">{{ drive.salary_range or '—' }}</td>
+                <td class="text-sm {% if drive.application_deadline and drive.application_deadline < today %}text-muted{% endif %}">
+                    {{ drive.application_deadline.strftime('%d %b %Y') if drive.application_deadline else '—' }}
+                </td>
+                <td><span class="badge badge-closed">{{ drive.applications|length }}</span></td>
+                <td><span class="badge badge-{{ drive.status }}">{{ drive.status | capitalize }}</span></td>
+                <td class="right">
+                    <div class="btn-group">
+                        <a href="{{ url_for('admin.view_drive', drive_id=drive.id) }}" class="btn btn-sm btn-outline">View</a>
+                        {% if drive.status == 'pending' %}
+                        <form method="POST" action="{{ url_for('admin.approve_drive', drive_id=drive.id) }}" style="display:inline">
+                            <button class="btn btn-sm btn-success">&#10003;</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('admin.reject_drive', drive_id=drive.id) }}" style="display:inline">
+                            <button class="btn btn-sm btn-warning">&#10007;</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state"><div class="icon">&#128227;</div><p>No drives found.</p></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

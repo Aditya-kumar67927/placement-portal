@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Student Profile{% endblock %}
+{% block page_title %}Student Profile{% endblock %}
+{% block topbar_actions %}<a href="{{ url_for('admin.students') }}" class="btn btn-sm btn-light">&larr; Back</a>{% endblock %}
+{% block content %}
+<div class="grid-4-8">
+    <div>
+        <div class="card">
+            <div class="card-body" style="text-align:center;padding:24px">
+                <div class="avatar-circle" style="margin:0 auto 12px">{{ student.full_name[0].upper() }}</div>
+                <strong style="font-size:15px">{{ student.full_name }}</strong>
+                <div class="text-muted text-sm" style="margin:4px 0 10px">{{ student.user.email }}</div>
+                {% if student.is_blacklisted %}
+                <span class="badge badge-rejected">Blacklisted</span>
+                {% else %}
+                <span class="badge badge-approved">Active</span>
+                {% endif %}
+            </div>
+            <div class="card-body" style="border-top:1px solid #e2e8f0;display:flex;gap:0">
+                <div style="flex:1;text-align:center">
+                    <div style="font-size:22px;font-weight:700;color:#2563eb">{{ applications|length }}</div>
+                    <div class="text-muted text-xs">Applications</div>
+                </div>
+                <div style="flex:1;text-align:center">
+                    <div style="font-size:22px;font-weight:700;color:#16a34a">{{ applications|selectattr('status','eq','Selected')|list|length }}</div>
+                    <div class="text-muted text-xs">Selected</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+            <div class="card-header">Academic Details</div>
+            <div class="card-body">
+                <div class="info-grid">
+                    <span class="info-label">Degree</span><span class="info-value">{{ student.degree or '—' }}</span>
+                    <span class="info-label">Branch</span><span class="info-value">{{ student.branch or '—' }}</span>
+                    <span class="info-label">CGPA</span><span class="info-value">{{ student.cgpa or '—' }}</span>
+                    <span class="info-label">Phone</span><span class="info-value">{{ student.phone or '—' }}</span>
+                </div>
+            </div>
+        </div>
+
+        {% if student.skills %}
+        <div class="card" style="margin-top:16px">
+            <div class="card-header">Skills</div>
+            <div class="card-body">{% for skill in student.skills.split(',') %}<span class="skill-tag">{{ skill.strip() }}</span>{% endfor %}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div>
+        <div class="card">
+            <div class="card-header">Application History</div>
+            <div class="card-body" style="padding:0">
+                {% if applications %}
+                <table class="tbl">
+                    <thead><tr><th class="pl">Drive</th><th>Company</th><th>Applied</th><th>Status</th></tr></thead>
+                    <tbody>
+                    {% for app in applications %}
+                    <tr>
+                        <td class="pl"><strong>{{ app.drive.job_title }}</strong></td>
+                        <td class="text-sm">{{ app.drive.company.company_name }}</td>
+                        <td class="text-sm">{{ app.application_date.strftime('%d %b %Y') }}</td>
+                        <td><span class="badge badge-{{ app.status.lower() }}">{{ app.status }}</span></td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state" style="padding:24px"><p>No applications yet.</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

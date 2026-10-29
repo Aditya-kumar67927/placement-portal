@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Placement Portal{% endblock %} | PlaceHub</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body { font-family: Georgia, 'Times New Roman', serif; background: #0d0d0d; color: #e8e4de; }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 230px; min-height: 100vh;
+            background: #111111;
+            border-right: 1px solid #1f1f1f;
+            position: fixed; top: 0; left: 0; z-index: 1000;
+            display: flex; flex-direction: column;
+        }
+        .sidebar-brand {
+            padding: 22px 20px 18px;
+            border-bottom: 1px solid #1f1f1f;
+            display: flex; align-items: center; gap: 10px;
+            text-decoration: none;
+        }
+        .sidebar-brand .brand-name {
+            font-size: 16px; font-weight: normal; color: #f0ece4; letter-spacing: 0.02em;
+        }
+        .sidebar-brand .role-tag {
+            font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+            padding: 2px 8px;
+            background: #1f1f1f; color: #c9a84c;
+            border: 1px solid #2a2a2a;
+            font-family: 'Courier New', monospace;
+            margin-left: auto;
+        }
+        .sidebar-nav { padding: 8px 0; flex: 1; overflow-y: auto; }
+        .nav-section {
+            font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+            color: #444444; padding: 14px 20px 5px;
+            font-family: 'Courier New', monospace;
+        }
+        .sidebar-nav a {
+            display: flex; align-items: center;
+            padding: 9px 20px;
+            color: #888888; text-decoration: none;
+            font-size: 13px;
+            border-left: 2px solid transparent;
+            transition: color 0.15s, border-color 0.15s, background 0.15s;
+        }
+        .sidebar-nav a:hover, .sidebar-nav a.active {
+            background: #1a1a1a; color: #f0ece4; border-left-color: #c9a84c;
+        }
+        .notif-badge {
+            margin-left: auto; font-size: 9px;
+            background: #cc3333; color: #fff;
+            border-radius: 20px; padding: 1px 6px;
+            font-family: 'Courier New', monospace;
+        }
+        .sidebar-footer {
+            padding: 14px 20px;
+            border-top: 1px solid #1f1f1f;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .avatar {
+            width: 34px; height: 34px; border-radius: 50%;
+            background: #1f1f1f; border: 1px solid #2a2a2a;
+            color: #c9a84c;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: bold; flex-shrink: 0;
+            font-family: 'Courier New', monospace;
+        }
+        .user-info { flex: 1; min-width: 0; }
+        .user-name {
+            color: #f0ece4; font-size: 12px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .user-role { color: #555555; font-size: 10px; font-family: 'Courier New', monospace; letter-spacing: 0.1em; }
+        .logout-link {
+            color: #444444; text-decoration: none; font-size: 16px;
+            transition: color 0.15s;
+        }
+        .logout-link:hover { color: #cc3333; }
+
+        /* ── MAIN ── */
+        .main-content { margin-left: 230px; min-height: 100vh; }
+        .topbar {
+            background: #111111; border-bottom: 1px solid #1f1f1f;
+            padding: 13px 28px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 999;
+        }
+        .page-title { font-size: 15px; color: #f0ece4; font-weight: normal; letter-spacing: 0.02em; }
+        .topbar-actions { display: flex; align-items: center; gap: 8px; }
+        .content-area { padding: 24px 28px; }
+
+        /* ── FLASH ── */
+        .flash {
+            padding: 10px 16px; margin-bottom: 12px;
+            font-size: 13px; font-family: 'Courier New', monospace;
+            border-left: 3px solid;
+        }
+        .flash-danger  { background: #1a0a0a; border-color: #cc3333; color: #e08080; }
+        .flash-warning { background: #1a1500; border-color: #c9a84c; color: #d4b96a; }
+        .flash-success { background: #0a1a0a; border-color: #4a9c5d; color: #7ec491; }
+        .flash-info    { background: #0a0f1a; border-color: #3a6ea8; color: #7aaad4; }
+
+        /* ── CARDS ── */
+        .card {
+            background: #111111; border: 1px solid #1f1f1f;
+        }
+        .card-header {
+            padding: 12px 20px; font-size: 13px; color: #aaaaaa;
+            border-bottom: 1px solid #1f1f1f;
+            display: flex; align-items: center; justify-content: space-between;
+            font-family: 'Courier New', monospace; letter-spacing: 0.05em;
+            text-transform: uppercase; font-size: 10px;
+        }
+        .card-body { padding: 20px; }
+
+        /* ── STAT CARDS ── */
+        .stat-card {
+            background: #111111; border: 1px solid #1f1f1f; padding: 18px 20px;
+        }
+        .stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .stat-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: #555555; font-family: 'Courier New', monospace; }
+        .stat-icon { font-size: 18px; opacity: 0.5; }
+        .stat-value { font-size: 30px; color: #f0ece4; font-weight: normal; }
+
+        /* ── GRIDS ── */
+        .grid-4   { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+        .grid-2   { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .grid-7-5 { display: grid; grid-template-columns: 7fr 5fr; gap: 14px; }
+        .grid-4-8 { display: grid; grid-template-columns: 4fr 8fr; gap: 14px; }
+
+        /* ── BADGES ── */
+        .badge {
+            display: inline-block; padding: 2px 10px;
+            font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+            font-family: 'Courier New', monospace; border: 1px solid;
+        }
+        .badge-applied     { border-color: #3a6ea8; color: #7aaad4; background: #0a0f1a; }
+        .badge-shortlisted { border-color: #c9a84c; color: #d4b96a; background: #1a1500; }
+        .badge-interview   { border-color: #7a4ea8; color: #b07ad4; background: #120a1a; }
+        .badge-selected    { border-color: #4a9c5d; color: #7ec491; background: #0a1a0a; }
+        .badge-rejected    { border-color: #cc3333; color: #e08080; background: #1a0a0a; }
+        .badge-pending     { border-color: #c9a84c; color: #d4b96a; background: #1a1500; }
+        .badge-approved    { border-color: #4a9c5d; color: #7ec491; background: #0a1a0a; }
+        .badge-closed      { border-color: #333333; color: #666666; background: #111111; }
+        .badge-dark        { border-color: #555555; color: #aaaaaa; background: #1a1a1a; }
+        .badge-active      { border-color: #4a9c5d; color: #7ec491; background: #0a1a0a; }
+
+        /* ── TABLES ── */
+        .tbl { width: 100%; border-collapse: collapse; }
+        .tbl th {
+            font-size: 9px; text-transform: uppercase; letter-spacing: 0.15em;
+            color: #444444; font-family: 'Courier New', monospace;
+            padding: 10px 16px; border-bottom: 1px solid #1f1f1f; text-align: left;
+        }
+        .tbl td {
+            padding: 12px 16px; font-size: 13px;
+            border-bottom: 1px solid #191919; vertical-align: middle;
+            color: #aaaaaa;
+        }
+        .tbl tr:last-child td { border-bottom: none; }
+        .tbl tr:hover td { background: #141414; }
+        .tbl td.pl { padding-left: 20px; }
+        .tbl th.pl { padding-left: 20px; }
+        .tbl th.right, .tbl td.right { text-align: right; padding-right: 20px; }
+        .text-muted { color: #555555; }
+        .text-sm { font-size: 12px; }
+        .text-xs { font-size: 10px; font-family: 'Courier New', monospace; }
+        .fw-bold { font-weight: bold; color: #f0ece4; }
+
+        /* ── BUTTONS ── */
+        .btn {
+            display: inline-block; padding: 7px 16px;
+            font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+            font-family: 'Courier New', monospace;
+            cursor: pointer; text-decoration: none; border: 1px solid;
+            text-align: center; white-space: nowrap; background: transparent;
+            transition: background 0.15s, color 0.15s;
+        }
+        .btn-sm { padding: 4px 12px; font-size: 10px; }
+        .btn-primary   { border-color: #c9a84c; color: #c9a84c; }
+        .btn-primary:hover { background: #c9a84c; color: #0d0d0d; }
+        .btn-success   { border-color: #4a9c5d; color: #7ec491; }
+        .btn-success:hover { background: #4a9c5d; color: #0d0d0d; }
+        .btn-danger    { border-color: #cc3333; color: #e08080; }
+        .btn-danger:hover { background: #cc3333; color: #fff; }
+        .btn-warning   { border-color: #c9a84c; color: #d4b96a; }
+        .btn-warning:hover { background: #c9a84c; color: #0d0d0d; }
+        .btn-secondary { border-color: #2a2a2a; color: #666666; }
+        .btn-secondary:hover { background: #1f1f1f; color: #aaaaaa; }
+        .btn-outline   { border-color: #2a2a2a; color: #888888; }
+        .btn-outline:hover { border-color: #c9a84c; color: #c9a84c; }
+        .btn-outline-danger { border-color: #3a1010; color: #cc3333; }
+        .btn-outline-danger:hover { background: #cc3333; color: #fff; }
+        .btn-outline-dark { border-color: #2a2a2a; color: #666666; }
+        .btn-outline-dark:hover { border-color: #555555; color: #aaaaaa; }
+        .btn-light { border-color: #2a2a2a; color: #666666; }
+        .btn-light:hover { background: #1a1a1a; color: #aaaaaa; }
+        .btn-disabled { border-color: #1f1f1f; color: #333333; cursor: not-allowed; }
+        .btn-link { background: none; border: none; color: #c9a84c; padding: 0; font-size: 11px; cursor: pointer; text-decoration: underline; letter-spacing: 0; text-transform: none; font-family: Georgia, serif; }
+
+        /* ── FORMS ── */
+        label { display: block; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #555555; margin-bottom: 7px; font-family: 'Courier New', monospace; }
+        .required { color: #cc3333; }
+        input[type="text"], input[type="email"], input[type="password"],
+        input[type="tel"], input[type="number"], input[type="url"],
+        input[type="date"], input[type="file"], textarea, select {
+            width: 100%; padding: 9px 12px;
+            border: 1px solid #2a2a2a; background: #1a1a1a;
+            font-size: 13px; color: #f0ece4; font-family: 'Courier New', monospace;
+            outline: none; transition: border-color 0.15s;
+        }
+        input:focus, textarea:focus, select:focus { border-color: #c9a84c; }
+        input::placeholder, textarea::placeholder { color: #333333; }
+        textarea { resize: vertical; }
+        select option { background: #1a1a1a; }
+        .form-text { font-size: 10px; color: #444444; margin-top: 4px; font-family: 'Courier New', monospace; }
+        .form-group { margin-bottom: 16px; }
+        .form-row { display: flex; flex-wrap: wrap; gap: 16px; }
+        .form-col-half { flex: 1 1 calc(50% - 8px); min-width: 200px; }
+        .form-col-third { flex: 1 1 calc(33% - 8px); min-width: 150px; }
+        .form-col-two-thirds { flex: 2 1 calc(66% - 8px); min-width: 200px; }
+        .form-col-full { flex: 1 1 100%; }
+        .form-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; }
+        .form-actions-right { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
+
+        /* ── MISC UTILITIES ── */
+        .btn-group { display: flex; gap: 4px; }
+        .notice { padding: 10px 16px; font-size: 12px; margin-bottom: 16px; font-family: 'Courier New', monospace; border-left: 3px solid; }
+        .notice-warning { background: #1a1500; border-color: #c9a84c; color: #d4b96a; }
+        .notice-info    { background: #0a0f1a; border-color: #3a6ea8; color: #7aaad4; }
+        .notif-list { list-style: none; }
+        .notif-item { padding: 14px 20px; border-bottom: 1px solid #191919; display: flex; gap: 14px; }
+        .notif-item:last-child { border-bottom: none; }
+        .notif-item.unread { background: #141414; }
+        .notif-icon { color: #c9a84c; font-size: 14px; margin-top: 2px; }
+        .notif-msg { font-size: 13px; color: #aaaaaa; }
+        .notif-time { font-size: 10px; color: #444444; margin-top: 4px; font-family: 'Courier New', monospace; }
+        .empty-state { text-align: center; padding: 48px 20px; color: #333333; }
+        .empty-state .icon { font-size: 36px; margin-bottom: 10px; opacity: 0.3; }
+        .empty-state p { font-size: 13px; margin-bottom: 12px; color: #444444; }
+        .section-title {
+            font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+            color: #c9a84c; font-family: 'Courier New', monospace;
+            padding-bottom: 7px; border-bottom: 1px solid #1f1f1f;
+            margin-bottom: 16px; margin-top: 20px;
+        }
+        .section-title:first-of-type { margin-top: 0; }
+        .skill-tag {
+            display: inline-block; padding: 2px 8px;
+            background: #1a1a1a; border: 1px solid #2a2a2a;
+            font-size: 10px; color: #666666; margin: 2px;
+            font-family: 'Courier New', monospace;
+        }
+        .info-grid { display: grid; grid-template-columns: 40% 60%; gap: 6px 8px; font-size: 13px; }
+        .info-label { color: #555555; font-family: 'Courier New', monospace; font-size: 11px; }
+        .info-value { color: #aaaaaa; }
+        .detail-block { padding: 12px; background: #1a1a1a; border: 1px solid #2a2a2a; }
+        .detail-label { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: #555555; font-family: 'Courier New', monospace; margin-bottom: 4px; }
+        .detail-value { font-size: 13px; color: #f0ece4; }
+        .avatar-circle {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: #1f1f1f; border: 1px solid #2a2a2a;
+            color: #c9a84c;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; font-family: 'Courier New', monospace; flex-shrink: 0;
+        }
+        .avatar-sm { width: 34px; height: 34px; font-size: 14px; }
+        .drives-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+        .drive-card { display: flex; flex-direction: column; height: 100%; }
+        .drive-card-footer { margin-top: auto; padding-top: 12px; display: flex; gap: 8px; }
+        .drive-card-footer .btn { flex: 1; }
+        .list-group { list-style: none; }
+        .list-group-item { padding: 12px 20px; border-bottom: 1px solid #191919; }
+        .list-group-item:last-child { border-bottom: none; }
+        .filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+        .search-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+        .search-bar input { flex: 1; }
+        .status-form { display: flex; gap: 6px; align-items: center; }
+        .status-form select { width: auto; min-width: 130px; }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-230px); }
+            .main-content { margin-left: 0; }
+            .grid-4 { grid-template-columns: 1fr 1fr; }
+            .grid-7-5, .grid-4-8, .grid-2 { grid-template-columns: 1fr; }
+            .drives-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+{% if session_user_id %}
+<aside class="sidebar">
+    <a href="#" class="sidebar-brand">
+        <span class="brand-name">PlaceHub</span>
+        <span class="role-tag">{{ session_user_role }}</span>
+    </a>
+
+    <nav class="sidebar-nav">
+        {% if session_user_role == 'admin' %}
+            <div class="nav-section">Main</div>
+            <a href="{{ url_for('admin.dashboard') }}" class="{{ 'active' if request.endpoint == 'admin.dashboard' }}">Dashboard</a>
+            <div class="nav-section">Management</div>
+            <a href="{{ url_for('admin.companies') }}" class="{{ 'active' if 'companies' in request.endpoint }}">Companies</a>
+            <a href="{{ url_for('admin.students') }}" class="{{ 'active' if 'student' in request.endpoint }}">Students</a>
+            <a href="{{ url_for('admin.drives') }}" class="{{ 'active' if 'drive' in request.endpoint }}">Placement Drives</a>
+            <a href="{{ url_for('admin.applications') }}" class="{{ 'active' if 'application' in request.endpoint }}">Applications</a>
+            <div class="nav-section">More</div>
+            <a href="{{ url_for('admin.notifications') }}">
+                Notifications
+                {% if unread_count %}<span class="notif-badge">{{ unread_count }}</span>{% endif %}
+            </a>
+
+        {% elif session_user_role == 'company' %}
+            <div class="nav-section">Main</div>
+            <a href="{{ url_for('company.dashboard') }}" class="{{ 'active' if request.endpoint == 'company.dashboard' }}">Dashboard</a>
+            <div class="nav-section">Recruitment</div>
+            <a href="{{ url_for('company.drives') }}" class="{{ 'active' if 'drive' in request.endpoint }}">Placement Drives</a>
+            <a href="{{ url_for('company.new_drive') }}">Post New Drive</a>
+            <div class="nav-section">Account</div>
+            <a href="{{ url_for('company.profile') }}" class="{{ 'active' if request.endpoint == 'company.profile' }}">Company Profile</a>
+            <a href="{{ url_for('company.notifications') }}">
+                Notifications
+                {% if unread_count %}<span class="notif-badge">{{ unread_count }}</span>{% endif %}
+            </a>
+
+        {% elif session_user_role == 'student' %}
+            <div class="nav-section">Main</div>
+            <a href="{{ url_for('student.dashboard') }}" class="{{ 'active' if request.endpoint == 'student.dashboard' }}">Dashboard</a>
+            <div class="nav-section">Jobs</div>
+            <a href="{{ url_for('student.drives') }}" class="{{ 'active' if request.endpoint == 'student.drives' }}">Browse Drives</a>
+            <a href="{{ url_for('student.applications') }}" class="{{ 'active' if request.endpoint == 'student.applications' }}">My Applications</a>
+            <div class="nav-section">Account</div>
+            <a href="{{ url_for('student.profile') }}" class="{{ 'active' if request.endpoint == 'student.profile' }}">My Profile</a>
+            <a href="{{ url_for('student.notifications') }}">
+                Notifications
+                {% if unread_count %}<span class="notif-badge">{{ unread_count }}</span>{% endif %}
+            </a>
+        {% endif %}
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="avatar avatar-sm">{{ session_username[0].upper() }}</div>
+        <div class="user-info">
+            <div class="user-name">{{ session_username }}</div>
+            <div class="user-role">{{ session_user_role }}</div>
+        </div>
+        <a href="{{ url_for('auth.logout') }}" class="logout-link" title="Logout">&#10005;</a>
+    </div>
+</aside>
+
+<div class="main-content">
+    <div class="topbar">
+        <div class="page-title">{% block page_title %}{% endblock %}</div>
+        <div class="topbar-actions">{% block topbar_actions %}{% endblock %}</div>
+    </div>
+    <div class="content-area">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+</div>
+
+{% else %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    <div style="position:fixed;top:16px;right:16px;z-index:9999;min-width:260px">
+    {% for category, message in messages %}
+    <div class="flash flash-{{ category }}">{{ message }}</div>
+    {% endfor %}
+    </div>
+{% endif %}
+{% endwith %}
+{% block public_content %}{% endblock %}
+{% endif %}
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

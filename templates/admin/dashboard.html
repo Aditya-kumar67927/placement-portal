@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+
+<div class="grid-4" style="margin-bottom:20px">
+    <div class="stat-card">
+        <div class="stat-top"><span class="label">Total Students</span><div class="icon-box" style="background:#dbeafe">&#128101;</div></div>
+        <div class="value">{{ total_students }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-top"><span class="label">Active Companies</span><div class="icon-box" style="background:#dcfce7">&#127970;</div></div>
+        <div class="value">{{ total_companies }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-top"><span class="label">Active Drives</span><div class="icon-box" style="background:#ede9fe">&#128227;</div></div>
+        <div class="value">{{ total_drives }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-top"><span class="label">Total Applications</span><div class="icon-box" style="background:#fff7ed">&#128196;</div></div>
+        <div class="value">{{ total_apps }}</div>
+    </div>
+</div>
+
+{% if pending_companies > 0 %}
+<div class="notice notice-warning" style="margin-bottom:12px">
+    <strong>{{ pending_companies }} company registration(s)</strong> awaiting approval.
+    <a href="{{ url_for('admin.companies') }}?status=pending" style="color:#7d5a00;font-weight:700"> Review now &rarr;</a>
+</div>
+{% endif %}
+{% if pending_drives > 0 %}
+<div class="notice notice-info" style="margin-bottom:20px">
+    <strong>{{ pending_drives }} placement drive(s)</strong> awaiting approval.
+    <a href="{{ url_for('admin.drives') }}?status=pending" style="color:#0d47a1;font-weight:700"> Review now &rarr;</a>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        Recent Applications
+        <a href="{{ url_for('admin.applications') }}" class="btn btn-sm btn-outline">View All</a>
+    </div>
+    <div class="card-body" style="padding:0">
+        {% if recent_apps %}
+        <table class="tbl">
+            <thead><tr>
+                <th class="pl">Student</th><th>Drive / Company</th><th>Applied On</th><th>Status</th>
+            </tr></thead>
+            <tbody>
+            {% for app in recent_apps %}
+            <tr>
+                <td class="pl"><strong>{{ app.student.full_name }}</strong><br><span class="text-muted text-sm">{{ app.student.user.email }}</span></td>
+                <td>{{ app.drive.job_title }}<br><span class="text-muted text-sm">{{ app.drive.company.company_name }}</span></td>
+                <td class="text-sm">{{ app.application_date.strftime('%d %b %Y') }}</td>
+                <td><span class="badge badge-{{ app.status.lower() }}">{{ app.status }}</span></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state"><div class="icon">&#128274;</div><p>No applications yet.</p></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

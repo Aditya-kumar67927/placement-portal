@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration | PlaceHub</title>
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background-color: #0d0d0d;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        /* ── Card ─────────────────────────────────── */
+        .card {
+            background: #111111;
+            width: 100%;
+            max-width: 620px;
+            margin: 0 auto;
+            border: 1px solid #2a2a2a;
+        }
+
+        /* ── Header ───────────────────────────────── */
+        .card-header {
+            padding: 32px 36px 24px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .brand {
+            font-size: 11px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: #c9a84c;
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .card-header h1 {
+            font-size: 24px;
+            font-weight: normal;
+            color: #f0ece4;
+        }
+
+        .card-header p {
+            font-size: 13px;
+            color: #555555;
+            margin-top: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* ── Body ─────────────────────────────────── */
+        .card-body {
+            padding: 28px 36px 36px;
+        }
+
+        /* ── Flash messages ───────────────────────── */
+        .flash {
+            padding: 10px 14px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            border-left: 3px solid;
+        }
+
+        .flash-danger  { background: #1a0a0a; border-color: #cc3333; color: #e08080; }
+        .flash-warning { background: #1a1500; border-color: #c9a84c; color: #d4b96a; }
+        .flash-success { background: #0a1a0a; border-color: #4a9c5d; color: #7ec491; }
+        .flash-info    { background: #0a0f1a; border-color: #3a6ea8; color: #7aaad4; }
+
+        /* ── Section title ────────────────────────── */
+        .section-title {
+            font-size: 10px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: #c9a84c;
+            font-family: 'Courier New', monospace;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #2a2a2a;
+            margin-bottom: 20px;
+            margin-top: 28px;
+        }
+
+        .section-title:first-of-type {
+            margin-top: 0;
+        }
+
+        /* ── Grid ─────────────────────────────────── */
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .col-half {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 220px;
+        }
+
+        .col-full {
+            flex: 1 1 100%;
+        }
+
+        /* ── Fields ───────────────────────────────── */
+        .field {
+            margin-bottom: 4px;
+        }
+
+        label {
+            display: block;
+            font-size: 11px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #777777;
+            margin-bottom: 7px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .required {
+            color: #cc3333;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="tel"],
+        input[type="number"],
+        input[type="url"],
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 10px 13px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            color: #f0ece4;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="file"] {
+            padding: 8px 13px;
+            color: #777777;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #c9a84c;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #444444;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .hint {
+            font-size: 11px;
+            color: #555555;
+            margin-top: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* ── Actions ──────────────────────────────── */
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 32px;
+            gap: 12px;
+        }
+
+        .btn-back {
+            padding: 11px 22px;
+            background: transparent;
+            border: 1px solid #2a2a2a;
+            color: #777777;
+            font-size: 13px;
+            font-family: 'Georgia', serif;
+            text-decoration: none;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .btn-back:hover {
+            border-color: #555555;
+            color: #aaaaaa;
+        }
+
+        .btn-submit {
+            padding: 11px 32px;
+            background: #c9a84c;
+            color: #0d0d0d;
+            border: none;
+            font-size: 12px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #d4b96a;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="card-header">
+        <div class="brand">PlaceHub &mdash; WCE</div>
+        <h1>Student Registration</h1>
+        <p>Create your account to access placement drives</p>
+    </div>
+
+    <div class="card-body">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" enctype="multipart/form-data">
+
+            <div class="section-title">Account Details</div>
+
+            <div class="row">
+                <div class="col-half field">
+                    <label for="username">Username <span class="required">*</span></label>
+                    <input type="text" id="username" name="username"
+                           value="{{ form.get('username', '') }}" required>
+                </div>
+                <div class="col-half field">
+                    <label for="email">Email <span class="required">*</span></label>
+                    <input type="email" id="email" name="email"
+                           value="{{ form.get('email', '') }}" required>
+                </div>
+                <div class="col-half field">
+                    <label for="password">Password <span class="required">*</span></label>
+                    <input type="password" id="password" name="password"
+                           minlength="6" required>
+                </div>
+                <div class="col-half field">
+                    <label for="confirm_password">Confirm Password <span class="required">*</span></label>
+                    <input type="password" id="confirm_password" name="confirm_password" required>
+                </div>
+            </div>
+
+            <div class="section-title">Personal Details</div>
+
+            <div class="row">
+                <div class="col-half field">
+                    <label for="full_name">Full Name <span class="required">*</span></label>
+                    <input type="text" id="full_name" name="full_name"
+                           value="{{ form.get('full_name', '') }}" required>
+                </div>
+                <div class="col-half field">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone"
+                           value="{{ form.get('phone', '') }}">
+                </div>
+                <div class="col-half field">
+                    <label for="degree">Degree</label>
+                    <input type="text" id="degree" name="degree"
+                           placeholder="e.g. B.Tech, M.Tech"
+                           value="{{ form.get('degree', '') }}">
+                </div>
+                <div class="col-half field">
+                    <label for="branch">Branch / Specialization</label>
+                    <input type="text" id="branch" name="branch"
+                           placeholder="e.g. Computer Science"
+                           value="{{ form.get('branch', '') }}">
+                </div>
+                <div class="col-half field">
+                    <label for="cgpa">CGPA</label>
+                    <input type="number" id="cgpa" name="cgpa"
+                           step="0.01" min="0" max="10"
+                           placeholder="e.g. 8.5"
+                           value="{{ form.get('cgpa', '') }}">
+                </div>
+                <div class="col-half field">
+                    <label for="resume">Resume (PDF / DOC / DOCX)</label>
+                    <input type="file" id="resume" name="resume"
+                           accept=".pdf,.doc,.docx">
+                </div>
+                <div class="col-full field">
+                    <label for="skills">Skills</label>
+                    <input type="text" id="skills" name="skills"
+                           placeholder="e.g. Python, Flask, SQL, JavaScript"
+                           value="{{ form.get('skills', '') }}">
+                    <p class="hint">Comma-separated list of your skills</p>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ url_for('auth.login') }}" class="btn-back">&larr; Back to Login</a>
+                <button type="submit" class="btn-submit">Create Account &rarr;</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Registration | PlaceHub</title>
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background-color: #0d0d0d;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        /* ── Card ─────────────────────────────────── */
+        .card {
+            background: #111111;
+            width: 100%;
+            max-width: 660px;
+            margin: 0 auto;
+            border: 1px solid #2a2a2a;
+        }
+
+        /* ── Header ───────────────────────────────── */
+        .card-header {
+            padding: 32px 36px 24px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .brand {
+            font-size: 11px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: #4a9c7a;
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .card-header h1 {
+            font-size: 24px;
+            font-weight: normal;
+            color: #f0ece4;
+        }
+
+        .card-header p {
+            font-size: 13px;
+            color: #555555;
+            margin-top: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* ── Body ─────────────────────────────────── */
+        .card-body {
+            padding: 28px 36px 36px;
+        }
+
+        /* ── Notice ───────────────────────────────── */
+        .notice {
+            padding: 12px 16px;
+            background: #0d1a14;
+            border-left: 3px solid #4a9c7a;
+            color: #7ec4a8;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 24px;
+        }
+
+        /* ── Flash messages ───────────────────────── */
+        .flash {
+            padding: 10px 14px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            border-left: 3px solid;
+        }
+
+        .flash-danger  { background: #1a0a0a; border-color: #cc3333; color: #e08080; }
+        .flash-warning { background: #1a1500; border-color: #c9a84c; color: #d4b96a; }
+        .flash-success { background: #0a1a0a; border-color: #4a9c5d; color: #7ec491; }
+        .flash-info    { background: #0a0f1a; border-color: #3a6ea8; color: #7aaad4; }
+
+        /* ── Section title ────────────────────────── */
+        .section-title {
+            font-size: 10px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: #4a9c7a;
+            font-family: 'Courier New', monospace;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #2a2a2a;
+            margin-bottom: 20px;
+            margin-top: 28px;
+        }
+
+        .section-title:first-of-type {
+            margin-top: 0;
+        }
+
+        /* ── Grid ─────────────────────────────────── */
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .col-half {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 220px;
+        }
+
+        .col-third {
+            flex: 1 1 calc(33% - 8px);
+            min-width: 160px;
+        }
+
+        .col-two-thirds {
+            flex: 2 1 calc(66% - 8px);
+            min-width: 220px;
+        }
+
+        .col-full {
+            flex: 1 1 100%;
+        }
+
+        /* ── Fields ───────────────────────────────── */
+        .field {
+            margin-bottom: 4px;
+        }
+
+        label {
+            display: block;
+            font-size: 11px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #777777;
+            margin-bottom: 7px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .required {
+            color: #cc3333;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="tel"],
+        input[type="url"],
+        textarea {
+            width: 100%;
+            padding: 10px 13px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            color: #f0ece4;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #4a9c7a;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #444444;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        /* ── Actions ──────────────────────────────── */
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 32px;
+            gap: 12px;
+        }
+
+        .btn-back {
+            padding: 11px 22px;
+            background: transparent;
+            border: 1px solid #2a2a2a;
+            color: #777777;
+            font-size: 13px;
+            font-family: 'Georgia', serif;
+            text-decoration: none;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .btn-back:hover {
+            border-color: #555555;
+            color: #aaaaaa;
+        }
+
+        .btn-submit {
+            padding: 11px 32px;
+            background: #4a9c7a;
+            color: #0d0d0d;
+            border: none;
+            font-size: 12px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #5ab88f;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="card-header">
+        <div class="brand">PlaceHub &mdash; WCE</div>
+        <h1>Company Registration</h1>
+        <p>Register your company to post placement drives</p>
+    </div>
+
+    <div class="card-body">
+
+        <div class="notice">
+            After registration, your account requires <strong>admin approval</strong>
+            before you can access the portal.
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+
+            <div class="section-title">Account Details</div>
+
+            <div class="row">
+                <div class="col-half field">
+                    <label for="username">Username <span class="required">*</span></label>
+                    <input type="text" id="username" name="username"
+                           value="{{ form.get('username', '') }}" required>
+                </div>
+                <div class="col-half field">
+                    <label for="email">Email <span class="required">*</span></label>
+                    <input type="email" id="email" name="email"
+                           value="{{ form.get('email', '') }}" required>
+                </div>
+                <div class="col-half field">
+                    <label for="password">Password <span class="required">*</span></label>
+                    <input type="password" id="password" name="password"
+                           minlength="6" required>
+                </div>
+                <div class="col-half field">
+                    <label for="confirm_password">Confirm Password <span class="required">*</span></label>
+                    <input type="password" id="confirm_password"
+                           name="confirm_password" required>
+                </div>
+            </div>
+
+            <div class="section-title">Company Information</div>
+
+            <div class="row">
+                <div class="col-two-thirds field">
+                    <label for="company_name">Company Name <span class="required">*</span></label>
+                    <input type="text" id="company_name" name="company_name"
+                           value="{{ form.get('company_name', '') }}" required>
+                </div>
+                <div class="col-third field">
+                    <label for="industry">Industry</label>
+                    <input type="text" id="industry" name="industry"
+                           placeholder="e.g. IT, Finance"
+                           value="{{ form.get('industry', '') }}">
+                </div>
+                <div class="col-full field">
+                    <label for="website">Website</label>
+                    <input type="url" id="website" name="website"
+                           placeholder="https://yourcompany.com"
+                           value="{{ form.get('website', '') }}">
+                </div>
+                <div class="col-full field">
+                    <label for="description">Company Description</label>
+                    <textarea id="description" name="description" rows="3"
+                              placeholder="Brief description of your company...">{{ form.get('description', '') }}</textarea>
+                </div>
+            </div>
+
+            <div class="section-title">HR Contact</div>
+
+            <div class="row">
+                <div class="col-third field">
+                    <label for="hr_contact_name">HR Name</label>
+                    <input type="text" id="hr_contact_name" name="hr_contact_name"
+                           value="{{ form.get('hr_contact_name', '') }}">
+                </div>
+                <div class="col-third field">
+                    <label for="hr_contact_email">HR Email</label>
+                    <input type="email" id="hr_contact_email" name="hr_contact_email"
+                           value="{{ form.get('hr_contact_email', '') }}">
+                </div>
+                <div class="col-third field">
+                    <label for="hr_contact_phone">HR Phone</label>
+                    <input type="tel" id="hr_contact_phone" name="hr_contact_phone"
+                           value="{{ form.get('hr_contact_phone', '') }}">
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ url_for('auth.login') }}" class="btn-back">&larr; Back to Login</a>
+                <button type="submit" class="btn-submit">Submit Registration &rarr;</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %}{{ drive.job_title }}{% endblock %}
+{% block page_title %}Drive Details{% endblock %}
+{% block topbar_actions %}<a href="{{ url_for('student.drives') }}" class="btn btn-sm btn-light">&larr; Back</a>{% endblock %}
+{% block content %}
+<div style="max-width:800px;margin:0 auto">
+    <div class="card" style="margin-bottom:16px">
+        <div class="card-body">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+                <div>
+                    <h2 style="font-size:20px;font-weight:700;margin-bottom:4px">{{ drive.job_title }}</h2>
+                    <div class="text-muted">&#127970; {{ drive.company.company_name }}</div>
+                </div>
+                <span class="badge badge-approved">Open</span>
+            </div>
+
+            <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+                {% if drive.salary_range %}
+                <div class="detail-block">
+                    <div class="detail-label">Salary</div>
+                    <div class="detail-value">{{ drive.salary_range }}</div>
+                </div>
+                {% endif %}
+                {% if drive.experience_required %}
+                <div class="detail-block">
+                    <div class="detail-label">Experience</div>
+                    <div class="detail-value">{{ drive.experience_required }}</div>
+                </div>
+                {% endif %}
+                {% if drive.application_deadline %}
+                <div class="detail-block">
+                    <div class="detail-label">Deadline</div>
+                    <div class="detail-value">{{ drive.application_deadline.strftime('%d %b %Y') }}</div>
+                </div>
+                {% endif %}
+                <div class="detail-block">
+                    <div class="detail-label">Posted</div>
+                    <div class="detail-value">{{ drive.created_at.strftime('%d %b %Y') }}</div>
+                </div>
+            </div>
+
+            {% if drive.required_skills %}
+            <div style="margin-bottom:16px">
+                <strong style="font-size:13px">Required Skills</strong>
+                <div style="margin-top:6px">{% for s in drive.required_skills.split(',') %}<span class="skill-tag">{{ s.strip() }}</span>{% endfor %}</div>
+            </div>
+            {% endif %}
+
+            <div style="margin-bottom:16px">
+                <strong style="font-size:13px">Job Description</strong>
+                <p style="font-size:13px;line-height:1.7;color:#374151;margin-top:6px">{{ drive.job_description }}</p>
+            </div>
+
+            {% if drive.eligibility_criteria %}
+            <div style="margin-bottom:16px">
+                <strong style="font-size:13px">Eligibility Criteria</strong>
+                <p style="font-size:13px;line-height:1.7;color:#374151;margin-top:6px">{{ drive.eligibility_criteria }}</p>
+            </div>
+            {% endif %}
+
+            <div style="border-top:1px solid #e2e8f0;padding-top:16px">
+                {% if already_applied %}
+                <div class="notice notice-info">
+                    You have already applied for this drive. Status: <strong>{{ already_applied.status }}</strong>
+                </div>
+                {% else %}
+                <form method="POST" action="{{ url_for('student.apply_drive', drive_id=drive.id) }}" style="display:inline">
+                    <button type="submit" class="btn btn-primary" style="padding:10px 28px">Apply for This Drive</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">About {{ drive.company.company_name }}</div>
+        <div class="card-body" style="font-size:13px">
+            {% if drive.company.description %}<p style="margin-bottom:12px">{{ drive.company.description }}</p>{% endif %}
+            <div class="info-grid">
+                <span class="info-label">Industry</span><span class="info-value">{{ drive.company.industry or '—' }}</span>
+                {% if drive.company.website %}
+                <span class="info-label">Website</span><span class="info-value"><a href="{{ drive.company.website }}" target="_blank">{{ drive.company.website }}</a></span>
+                {% endif %}
+                {% if drive.company.hr_contact_name %}
+                <span class="info-label">HR Contact</span><span class="info-value">{{ drive.company.hr_contact_name }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

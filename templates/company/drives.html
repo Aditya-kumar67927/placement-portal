@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}My Drives{% endblock %}
+{% block page_title %}Placement Drives{% endblock %}
+{% block topbar_actions %}<a href="{{ url_for('company.new_drive') }}" class="btn btn-sm btn-primary">+ Post New Drive</a>{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-body" style="padding:0">
+        {% if drives %}
+        <table class="tbl">
+            <thead><tr>
+                <th class="pl">Job Title</th><th>Skills</th><th>Salary</th>
+                <th>Deadline</th><th>Applicants</th><th>Status</th><th class="right">Actions</th>
+            </tr></thead>
+            <tbody>
+            {% for drive in drives %}
+            <tr>
+                <td class="pl"><strong>{{ drive.job_title }}</strong><br><span class="text-muted text-sm">Posted {{ drive.created_at.strftime('%d %b %Y') }}</span></td>
+                <td>{% if drive.required_skills %}{% for s in drive.required_skills.split(',')[:2] %}<span class="skill-tag">{{ s.strip() }}</span>{% endfor %}{% else %}—{% endif %}</td>
+                <td class="text-sm">{{ drive.salary_range or '—' }}</td>
+                <td class="text-sm">{{ drive.application_deadline.strftime('%d %b %Y') if drive.application_deadline else '—' }}</td>
+                <td><span class="badge badge-closed">{{ drive.applications|length }}</span></td>
+                <td><span class="badge badge-{{ drive.status }}">{{ drive.status | capitalize }}</span></td>
+                <td class="right">
+                    <div class="btn-group">
+                        <a href="{{ url_for('company.drive_applications', drive_id=drive.id) }}" class="btn btn-sm btn-outline">Applicants</a>
+                        {% if drive.status != 'closed' %}
+                        <a href="{{ url_for('company.edit_drive', drive_id=drive.id) }}" class="btn btn-sm btn-secondary">Edit</a>
+                        <form method="POST" action="{{ url_for('company.close_drive', drive_id=drive.id) }}" style="display:inline">
+                            <button class="btn btn-sm btn-warning">Close</button>
+                        </form>
+                        {% endif %}
+                        <form method="POST" action="{{ url_for('company.delete_drive', drive_id=drive.id) }}" style="display:inline" onsubmit="return confirm('Delete this drive?')">
+                            <button class="btn btn-sm btn-outline-danger">Del</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state"><div class="icon">&#128227;</div><p>No drives posted yet.</p><a href="{{ url_for('company.new_drive') }}" class="btn btn-sm btn-primary">Post Your First Drive</a></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

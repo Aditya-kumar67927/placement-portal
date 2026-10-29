@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | PlaceHub</title>
+    <style>
+        /* ── Reset ────────────────────────────────── */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ── Page ────────────────────────────────── */
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background-color: blue;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* ── Card ─────────────────────────────────── */
+        .card {
+            background: #111111;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #2a2a2a;
+        }
+
+        /* ── Header ───────────────────────────────── */
+        .card-header {
+            padding: 36px 36px 28px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .brand {
+            font-size: 11px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: #c9a84c;
+            margin-bottom: 10px;
+        }
+
+        .card-header h1 {
+            font-size: 28px;
+            font-weight: normal;
+            color: #f0ece4;
+            letter-spacing: -0.01em;
+        }
+
+        .card-header p {
+            font-size: 13px;
+            color: #555555;
+            margin-top: 6px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* ── Body ─────────────────────────────────── */
+        .card-body {
+            padding: 28px 36px 36px;
+        }
+
+        /* ── Flash messages ───────────────────────── */
+        .flash {
+            padding: 10px 14px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            border-left: 3px solid;
+        }
+
+        .flash-danger  { background: #1a0a0a; border-color: #cc3333; color: #e08080; }
+        .flash-warning { background: #1a1500; border-color: #c9a84c; color: #d4b96a; }
+        .flash-success { background: #0a1a0a; border-color: #4a9c5d; color: #7ec491; }
+        .flash-info    { background: #0a0f1a; border-color: #3a6ea8; color: #7aaad4; }
+
+        /* ── Form fields ──────────────────────────── */
+        .field {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 11px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #777777;
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"],
+        input[type="tel"],
+        input[type="number"],
+        input[type="url"],
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 11px 14px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            color: #f0ece4;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #c9a84c;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #444444;
+        }
+
+        /* ── Submit button ────────────────────────── */
+        .btn-submit {
+            width: 100%;
+            padding: 13px;
+            background: #c9a84c;
+            color: #0d0d0d;
+            border: none;
+            font-size: 12px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 6px;
+        }
+
+        .btn-submit:hover {
+            background: #d4b96a;
+        }
+
+        /* ── Divider ──────────────────────────────── */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 24px 0 20px;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: #2a2a2a;
+        }
+
+        .divider-text {
+            font-size: 11px;
+            color: #444444;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-family: 'Courier New', monospace;
+            white-space: nowrap;
+        }
+
+        /* ── Link buttons ─────────────────────────── */
+        .btn-link {
+            display: block;
+            width: 100%;
+            padding: 11px;
+            background: transparent;
+            border: 1px solid #2a2a2a;
+            color: #aaaaaa;
+            font-size: 13px;
+            font-family: 'Georgia', serif;
+            text-decoration: none;
+            text-align: center;
+            margin-bottom: 8px;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .btn-link:hover {
+            border-color: #c9a84c;
+            color: #c9a84c;
+        }
+
+        .btn-link:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="card-header">
+        <div class="brand">PlaceHub &mdash; WCE</div>
+        <h1>Sign In</h1>
+        <p>Campus Placement Portal</p>
+    </div>
+
+    <div class="card-body">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('auth.login') }}">
+
+            <div class="field">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email"
+                       placeholder="you@example.com" required>
+            </div>
+
+            <div class="field">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password"
+                       placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="btn-submit">Sign In &rarr;</button>
+
+        </form>
+
+        <div class="divider">
+            <div class="divider-line"></div>
+            <span class="divider-text">New here? Register as</span>
+            <div class="divider-line"></div>
+        </div>
+
+        <a href="{{ url_for('auth.register_student') }}" class="btn-link">
+            Student &mdash; Register for placement drives
+        </a>
+        <a href="{{ url_for('auth.register_company') }}" class="btn-link">
+            Company &mdash; Post placement drives
+        </a>
+
+    </div>
+</div>
+
+</body>
+</html>

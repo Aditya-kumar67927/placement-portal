@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}My Applications{% endblock %}
+{% block page_title %}My Applications{% endblock %}
+{% block content %}
+
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+    {% set statuses = [('Applied','badge-applied'),('Shortlisted','badge-shortlisted'),('Interview','badge-interview'),('Selected','badge-selected'),('Rejected','badge-rejected')] %}
+    {% for s, cls in statuses %}
+    {% set cnt = applications|selectattr('status','eq',s)|list|length %}
+    {% if cnt > 0 %}<span class="badge {{ cls }}" style="padding:5px 12px">{{ s }}: {{ cnt }}</span>{% endif %}
+    {% endfor %}
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding:0">
+        {% if applications %}
+        <table class="tbl">
+            <thead><tr>
+                <th class="pl">Drive / Company</th><th>Skills Required</th><th>Salary</th><th>Applied On</th><th>Status</th>
+            </tr></thead>
+            <tbody>
+            {% for app in applications %}
+            <tr>
+                <td class="pl"><strong>{{ app.drive.job_title }}</strong><br><span class="text-muted text-sm">&#127970; {{ app.drive.company.company_name }}</span></td>
+                <td>{% if app.drive.required_skills %}{% for s in app.drive.required_skills.split(',')[:2] %}<span class="skill-tag">{{ s.strip() }}</span>{% endfor %}{% else %}—{% endif %}</td>
+                <td class="text-sm">{{ app.drive.salary_range or '—' }}</td>
+                <td class="text-sm">{{ app.application_date.strftime('%d %b %Y') }}</td>
+                <td><span class="badge badge-{{ app.status.lower() }}">{{ app.status }}</span></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state"><div class="icon">&#128196;</div><p>No applications yet.</p><a href="{{ url_for('student.drives') }}" class="btn btn-sm btn-primary">Browse Drives</a></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

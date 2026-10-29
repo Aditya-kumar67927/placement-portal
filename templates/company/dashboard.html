@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Company Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block topbar_actions %}<a href="{{ url_for('company.new_drive') }}" class="btn btn-sm btn-primary">+ Post Drive</a>{% endblock %}
+{% block content %}
+
+{% if company.approval_status == 'pending' %}
+<div class="notice notice-warning" style="margin-bottom:20px">
+    <strong>Pending Approval.</strong> Your company registration is awaiting admin approval.
+</div>
+{% endif %}
+
+<div class="grid-4" style="margin-bottom:20px">
+    <div class="stat-card"><div class="stat-top"><span class="label">Total Drives</span><div class="icon-box" style="background:#dbeafe">&#128227;</div></div><div class="value">{{ total_drives }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="label">Approved Drives</span><div class="icon-box" style="background:#dcfce7">&#10003;</div></div><div class="value">{{ approved_drives }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="label">Total Applications</span><div class="icon-box" style="background:#ede9fe">&#128196;</div></div><div class="value">{{ total_apps }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="label">Students Selected</span><div class="icon-box" style="background:#dcfce7">&#127942;</div></div><div class="value">{{ selected_count }}</div></div>
+</div>
+
+<div class="grid-7-5">
+    <div class="card">
+        <div class="card-header">Your Drives <a href="{{ url_for('company.drives') }}" class="btn btn-sm btn-outline">View All</a></div>
+        <div class="card-body" style="padding:0">
+            {% if drives %}
+            <table class="tbl">
+                <thead><tr><th class="pl">Job Title</th><th>Applications</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody>
+                {% for drive in drives[:5] %}
+                <tr>
+                    <td class="pl"><strong style="font-size:13px">{{ drive.job_title }}</strong><br><span class="text-muted text-sm">{{ drive.created_at.strftime('%d %b %Y') }}</span></td>
+                    <td><span class="badge badge-closed">{{ drive.applications|length }}</span></td>
+                    <td><span class="badge badge-{{ drive.status }}">{{ drive.status | capitalize }}</span></td>
+                    <td><a href="{{ url_for('company.drive_applications', drive_id=drive.id) }}" class="btn btn-sm btn-outline">View</a></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state"><div class="icon">&#128227;</div><p>No drives yet.</p><a href="{{ url_for('company.new_drive') }}" class="btn btn-sm btn-primary">Post First Drive</a></div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">Recent Applications</div>
+        <div class="card-body" style="padding:0">
+            {% if recent_apps %}
+            <ul class="list-group">
+                {% for app in recent_apps %}
+                <li class="list-group-item">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <div>
+                            <div style="font-size:13px;font-weight:600">{{ app.student.full_name }}</div>
+                            <div class="text-muted text-sm">{{ app.drive.job_title }}</div>
+                        </div>
+                        <span class="badge badge-{{ app.status.lower() }}">{{ app.status }}</span>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="empty-state" style="padding:24px"><p>No applications yet.</p></div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

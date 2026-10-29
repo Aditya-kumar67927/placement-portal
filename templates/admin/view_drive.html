@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Drive Details{% endblock %}
+{% block page_title %}Drive Details{% endblock %}
+{% block topbar_actions %}<a href="{{ url_for('admin.drives') }}" class="btn btn-sm btn-light">&larr; Back</a>{% endblock %}
+{% block content %}
+<div class="grid-4-8">
+    <div>
+        <div class="card">
+            <div class="card-body">
+                <strong style="font-size:15px">{{ drive.job_title }}</strong>
+                <div class="text-muted text-sm" style="margin:4px 0 10px">{{ drive.company.company_name }}</div>
+                <span class="badge badge-{{ drive.status }}" style="margin-bottom:14px;display:inline-block">{{ drive.status | capitalize }}</span>
+                <div class="info-grid">
+                    <span class="info-label">Salary</span><span class="info-value">{{ drive.salary_range or '—' }}</span>
+                    <span class="info-label">Experience</span><span class="info-value">{{ drive.experience_required or '—' }}</span>
+                    <span class="info-label">Deadline</span><span class="info-value">{{ drive.application_deadline.strftime('%d %b %Y') if drive.application_deadline else '—' }}</span>
+                    <span class="info-label">Posted</span><span class="info-value">{{ drive.created_at.strftime('%d %b %Y') }}</span>
+                    <span class="info-label">Applications</span><span class="info-value">{{ applications|length }}</span>
+                </div>
+            </div>
+        </div>
+
+        {% if drive.required_skills %}
+        <div class="card" style="margin-top:16px">
+            <div class="card-header">Required Skills</div>
+            <div class="card-body">{% for s in drive.required_skills.split(',') %}<span class="skill-tag">{{ s.strip() }}</span>{% endfor %}</div>
+        </div>
+        {% endif %}
+
+        {% if drive.status == 'pending' %}
+        <div class="card" style="margin-top:16px">
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin.approve_drive', drive_id=drive.id) }}" style="margin-bottom:8px">
+                    <button class="btn btn-success" style="width:100%">&#10003; Approve Drive</button>
+                </form>
+                <form method="POST" action="{{ url_for('admin.reject_drive', drive_id=drive.id) }}">
+                    <button class="btn btn-outline-danger" style="width:100%">&#10007; Reject Drive</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div>
+        <div class="card" style="margin-bottom:16px">
+            <div class="card-header">Job Description</div>
+            <div class="card-body" style="font-size:13px;line-height:1.7">{{ drive.job_description }}</div>
+        </div>
+        {% if drive.eligibility_criteria %}
+        <div class="card" style="margin-bottom:16px">
+            <div class="card-header">Eligibility Criteria</div>
+            <div class="card-body" style="font-size:13px;line-height:1.7">{{ drive.eligibility_criteria }}</div>
+        </div>
+        {% endif %}
+        <div class="card">
+            <div class="card-header">Applicants ({{ applications|length }})</div>
+            <div class="card-body" style="padding:0">
+                {% if applications %}
+                <table class="tbl">
+                    <thead><tr><th class="pl">Student</th><th>CGPA</th><th>Applied</th><th>Status</th></tr></thead>
+                    <tbody>
+                    {% for app in applications %}
+                    <tr>
+                        <td class="pl"><strong>{{ app.student.full_name }}</strong><br><span class="text-muted text-sm">{{ app.student.user.email }}</span></td>
+                        <td class="text-sm">{{ app.student.cgpa or '—' }}</td>
+                        <td class="text-sm">{{ app.application_date.strftime('%d %b %Y') }}</td>
+                        <td><span class="badge badge-{{ app.status.lower() }}">{{ app.status }}</span></td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state" style="padding:24px"><p>No applications yet.</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

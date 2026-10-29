@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Post New Drive{% endblock %}
+{% block page_title %}Post New Placement Drive{% endblock %}
+{% block topbar_actions %}<a href="{{ url_for('company.drives') }}" class="btn btn-sm btn-light">&larr; Back</a>{% endblock %}
+{% block content %}
+<div style="max-width:720px;margin:0 auto">
+    <div class="card">
+        <div class="card-header">New Placement Drive</div>
+        <div class="card-body">
+            <form method="POST">
+                <div class="form-group">
+                    <label>Job Title <span class="required">*</span></label>
+                    <input type="text" name="job_title" value="{{ form.get('job_title','') }}" placeholder="e.g. Software Engineer" required>
+                </div>
+                <div class="form-group">
+                    <label>Job Description <span class="required">*</span></label>
+                    <textarea name="job_description" rows="4" placeholder="Describe the role and responsibilities..." required>{{ form.get('job_description','') }}</textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-col-half form-group">
+                        <label>Required Skills</label>
+                        <input type="text" name="required_skills" placeholder="e.g. Python, Django, SQL" value="{{ form.get('required_skills','') }}">
+                        <div class="form-text">Comma-separated</div>
+                    </div>
+                    <div class="form-col-half form-group">
+                        <label>Experience Required</label>
+                        <input type="text" name="experience_required" placeholder="e.g. 0-2 years, Fresher" value="{{ form.get('experience_required','') }}">
+                    </div>
+                    <div class="form-col-half form-group">
+                        <label>Salary Range (CTC)</label>
+                        <input type="text" name="salary_range" placeholder="e.g. 6-10 LPA" value="{{ form.get('salary_range','') }}">
+                    </div>
+                    <div class="form-col-half form-group">
+                        <label>Application Deadline</label>
+                        <input type="date" name="application_deadline" value="{{ form.get('application_deadline','') }}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Eligibility Criteria</label>
+                    <textarea name="eligibility_criteria" rows="2" placeholder="e.g. B.Tech/M.Tech with CGPA >= 7.0">{{ form.get('eligibility_criteria','') }}</textarea>
+                </div>
+                <div class="form-actions-right">
+                    <a href="{{ url_for('company.drives') }}" class="btn btn-light">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Submit for Approval</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

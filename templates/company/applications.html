@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Applications{% endblock %}
+{% block page_title %}Applications — {{ drive.job_title }}{% endblock %}
+{% block topbar_actions %}<a href="{{ url_for('company.drives') }}" class="btn btn-sm btn-light">&larr; Back to Drives</a>{% endblock %}
+{% block content %}
+<div class="card" style="margin-bottom:16px">
+    <div class="card-body" style="display:flex;gap:24px;flex-wrap:wrap;font-size:13px">
+        <span>&#127970; {{ company.company_name }}</span>
+        <span>&#128101; {{ applications|length }} applicants</span>
+        <span class="badge badge-{{ drive.status }}">{{ drive.status | capitalize }}</span>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body" style="padding:0">
+        {% if applications %}
+        <table class="tbl">
+            <thead><tr>
+                <th class="pl">Student</th><th>Degree / Branch</th><th>CGPA</th>
+                <th>Skills</th><th>Applied On</th><th>Status</th><th>Update Status</th>
+            </tr></thead>
+            <tbody>
+            {% for app in applications %}
+            <tr>
+                <td class="pl">
+                    <strong>{{ app.student.full_name }}</strong><br>
+                    <span class="text-muted text-sm">{{ app.student.user.email }}</span><br>
+                    <a href="{{ url_for('company.view_student_profile', student_id=app.student.id) }}" class="btn-link">View Profile</a>
+                </td>
+                <td class="text-sm">{{ app.student.degree or '—' }}<br>{{ app.student.branch or '—' }}</td>
+                <td class="text-sm">{{ app.student.cgpa or '—' }}</td>
+                <td>{% if app.student.skills %}{% for s in app.student.skills.split(',')[:2] %}<span class="skill-tag">{{ s.strip() }}</span>{% endfor %}{% else %}—{% endif %}</td>
+                <td class="text-sm">{{ app.application_date.strftime('%d %b %Y') }}</td>
+                <td><span class="badge badge-{{ app.status.lower() }}">{{ app.status }}</span></td>
+                <td>
+                    <form method="POST" action="{{ url_for('company.update_app_status', app_id=app.id) }}" class="status-form">
+                        <select name="status">
+                            {% for s in ['Applied','Shortlisted','Interview','Selected','Rejected'] %}
+                            <option value="{{ s }}" {{ 'selected' if app.status == s }}>{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-primary">&#10003;</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state"><div class="icon">&#128274;</div><p>No applications received yet.</p></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}All Applications{% endblock %}
+{% block page_title %}All Applications{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-body" style="padding:0">
+        {% if applications %}
+        <table class="tbl">
+            <thead><tr>
+                <th class="pl">Student</th><th>Drive</th><th>Company</th><th>Applied On</th><th>Status</th>
+            </tr></thead>
+            <tbody>
+            {% for app in applications %}
+            <tr>
+                <td class="pl"><strong>{{ app.student.full_name }}</strong><br><span class="text-muted text-sm">{{ app.student.user.email }}</span></td>
+                <td>{{ app.drive.job_title }}</td>
+                <td class="text-sm">{{ app.drive.company.company_name }}</td>
+                <td class="text-sm">{{ app.application_date.strftime('%d %b %Y, %H:%M') }}</td>
+                <td><span class="badge badge-{{ app.status.lower() }}">{{ app.status }}</span></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state"><div class="icon">&#128196;</div><p>No applications found.</p></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

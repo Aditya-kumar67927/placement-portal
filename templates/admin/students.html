@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Manage Students{% endblock %}
+{% block page_title %}Students{% endblock %}
+{% block content %}
+
+<div class="search-bar">
+    <form method="GET" style="display:flex;gap:8px;flex:1">
+        <input type="text" name="search" placeholder="Search by name, email, phone or username..." value="{{ search }}">
+        <button class="btn btn-primary" type="submit">Search</button>
+        {% if search %}<a href="{{ url_for('admin.students') }}" class="btn btn-light">Clear</a>{% endif %}
+    </form>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding:0">
+        {% if students %}
+        <table class="tbl">
+            <thead><tr>
+                <th class="pl">Student</th><th>Degree / Branch</th><th>CGPA</th>
+                <th>Skills</th><th>Applications</th><th>Status</th><th class="right">Actions</th>
+            </tr></thead>
+            <tbody>
+            {% for student in students %}
+            <tr>
+                <td class="pl">
+                    <strong>{{ student.full_name }}</strong><br>
+                    <span class="text-muted text-sm">{{ student.user.email }}</span>
+                    {% if student.phone %}<br><span class="text-muted text-sm">{{ student.phone }}</span>{% endif %}
+                </td>
+                <td class="text-sm">{{ student.degree or '—' }}<br>{{ student.branch or '—' }}</td>
+                <td class="text-sm">{{ student.cgpa or '—' }}</td>
+                <td>
+                    {% if student.skills %}
+                        {% for skill in student.skills.split(',')[:3] %}<span class="skill-tag">{{ skill.strip() }}</span>{% endfor %}
+                        {% if student.skills.split(',')|length > 3 %}<span class="text-muted text-xs"> +{{ student.skills.split(',')|length - 3 }} more</span>{% endif %}
+                    {% else %}—{% endif %}
+                </td>
+                <td><span class="badge badge-closed">{{ student.applications|length }}</span></td>
+                <td>
+                    {% if student.is_blacklisted %}
+                    <span class="badge badge-rejected">Blacklisted</span>
+                    {% else %}
+                    <span class="badge badge-approved">Active</span>
+                    {% endif %}
+                </td>
+                <td class="right">
+                    <div class="btn-group">
+                        <a href="{{ url_for('admin.view_student', student_id=student.id) }}" class="btn btn-sm btn-outline" title="View">View</a>
+                        <form method="POST" action="{{ url_for('admin.blacklist_student', student_id=student.id) }}" style="display:inline">
+                            <button class="btn btn-sm btn-outline-dark">{{ 'Unblock' if student.is_blacklisted else 'Block' }}</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('admin.delete_student', student_id=student.id) }}" style="display:inline" onsubmit="return confirm('Delete student {{ student.full_name }}?')">
+                            <button class="btn btn-sm btn-outline-danger">Del</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state"><div class="icon">&#128101;</div><p>No students found.</p></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

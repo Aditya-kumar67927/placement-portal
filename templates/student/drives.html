@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Browse Drives{% endblock %}
+{% block page_title %}Browse Placement Drives{% endblock %}
+{% block content %}
+
+<div class="search-bar">
+    <form method="GET" style="display:flex;gap:8px;flex:1">
+        <input type="text" name="search" placeholder="Search by job title, company, or skills..." value="{{ search }}">
+        <button class="btn btn-primary" type="submit">Search</button>
+        {% if search %}<a href="{{ url_for('student.drives') }}" class="btn btn-light">Clear</a>{% endif %}
+    </form>
+</div>
+
+{% if drives %}
+<div class="drives-grid">
+    {% for drive in drives %}
+    <div class="card">
+        <div class="card-body drive-card">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                <div>
+                    <strong style="font-size:14px">{{ drive.job_title }}</strong>
+                    <div class="text-muted text-sm">&#127970; {{ drive.company.company_name }}</div>
+                </div>
+                {% if drive.id in applied_drive_ids %}<span class="badge badge-applied" style="align-self:flex-start">Applied</span>{% endif %}
+            </div>
+            <div style="font-size:12px;color:#475569;margin-bottom:8px;line-height:1.5">
+                {{ drive.job_description[:100] }}{% if drive.job_description|length > 100 %}...{% endif %}
+            </div>
+            {% if drive.required_skills %}
+            <div style="margin-bottom:8px">{% for s in drive.required_skills.split(',')[:4] %}<span class="skill-tag">{{ s.strip() }}</span>{% endfor %}</div>
+            {% endif %}
+            <div style="display:flex;gap:12px;font-size:11px;color:#64748b;margin-bottom:12px">
+                {% if drive.salary_range %}<span>&#128181; {{ drive.salary_range }}</span>{% endif %}
+                {% if drive.experience_required %}<span>&#128188; {{ drive.experience_required }}</span>{% endif %}
+                {% if drive.application_deadline %}<span>&#128197; {{ drive.application_deadline.strftime('%d %b') }}</span>{% endif %}
+            </div>
+            <div class="drive-card-footer">
+                <a href="{{ url_for('student.view_drive', drive_id=drive.id) }}" class="btn btn-sm btn-outline">View Details</a>
+                {% if drive.id not in applied_drive_ids %}
+                <form method="POST" action="{{ url_for('student.apply_drive', drive_id=drive.id) }}" style="flex:1">
+                    <button type="submit" class="btn btn-sm btn-primary" style="width:100%">Apply Now</button>
+                </form>
+                {% else %}
+                <button class="btn btn-sm btn-disabled" disabled>&#10003; Applied</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="icon">&#128227;</div>
+    <p>No drives found{% if search %} for "{{ search }}"{% endif %}</p>
+    {% if search %}<a href="{{ url_for('student.drives') }}" class="btn btn-primary btn-sm">Clear Search</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}
